@@ -1,0 +1,74 @@
+substitutions:
+# Unique name for this configuration - use only Latin letters and numbers,
+# no spaces or special characters, e.g. "tclac".
+# If you have multiple AC modules, the device_name must be changed accordingly,
+# e.g. by appending numbers: tclac1, tclac2, tclac3...
+  device_name: tclac
+# Human-readable name for the air conditioner, displayed in the interface:
+  humanly_name: TCL Air Conditioner
+# WiFi credentials - can alternatively be stored in the "secret" file in ESPHome, otherwise edit here:
+# WiFi network name:
+  wifi_ssid: !secret wifi_ssid
+# WiFi password:
+  wifi_password: !secret wifi_password
+# Password for recovery mode - the hotspot will be named: "{device_name} Fallback Hotspot"
+  recovery_pass: mKSzmBdt7DAj
+# Password for OTA updates - generated once and used permanently:
+  ota_pass: 90cf525a594c8bb2cbf917bc2c2fa058
+# API key for connecting to Home Assistant - generate new key here: https://esphome.io/components/api.html
+  api_key: lmUoWsWs1oqSfJqLFsA6PisHSx4Y1G+iu7V3PDIqpXk=
+# GPIO pins of the module connected to UART:
+  uart_rx: GPIO3
+  uart_tx: GPIO1
+# GPIO pins for status LEDs (receive/transmit). Only work if "leds" is enabled in "packages".
+# If you don't want to use LEDs, you can enter any values here.
+  receive_led: GPIO6
+  transmit_led: GPIO4
+
+# Included files - automatically downloaded and updated from the internet.
+# Uncomment the desired options.
+# Description of options:
+# - packages/leds.yaml - LEDs for indicating transmit/receive; define pins via receive_led / transmit_led
+#
+# All entered lines must be at exactly this indentation level - otherwise errors will occur!
+packages:
+  remote_package:
+    url: https://github.com/sorz2122/tclac.git
+    ref: master
+    files:
+    # v - lines must be aligned exactly here, otherwise there will be problems!
+      - packages/core.yaml # The heart of everything
+      # - packages/leds.yaml
+    refresh: 30s
+
+# Selected module to be flashed with this firmware.
+# Prepared configurations can be used by removing the comment:
+
+# ESP32 with ESP-IDF Framework (for Thread support)
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+    version: recommended
+
+# Thread configuration (optional - enable if needed)
+#thread:
+#  enable: true
+#  network_name: "TCL-Thread"
+#  network_key: !secret thread_network_key
+#  pan_id: 0x1234
+#  channel: 15
+
+# For ESP32-C6 (better Thread support):
+#esp32:
+#  board: esp32-c6-devkitc-1
+#  variant: esp32c6
+#  framework:
+#    type: esp-idf
+#    version: recommended
+
+# Status LED - optionally enable if free pins are available
+#status_led:
+#  pin:
+#    number: GPIO5
+#    inverted: false

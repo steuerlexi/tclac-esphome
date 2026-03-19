@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ESPHome
+*.ini
+*.txt
+*.log
+.DS_Store
+
+# ESP-IDF
+build/
+sdkconfig
+sdkconfig.old
+sdkconfig.bak
+components/esp-matter/
+components/connectivity/
+components/matter/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+# Binary files
+*.bin
+*.elf
+*.map
+*.o
+
+# VS Code
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
