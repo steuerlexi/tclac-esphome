@@ -431,7 +431,12 @@ void tclacClimate::takeControl() {
 		//			100 - fixation between center and right
 		//			101 - fixation on the right
 
-		// Set the vertical flap swing mode
+		// Set the vertical flap swing mode — only while vertical swing is active.
+		// Writing these bits with swing disabled conflicts with the fixation field
+		// below (byte 32 masks 00011000 vs 00000111) and makes some units park the
+		// flap downward instead of at the fixed position.
+	if (switch_swing_mode == climate::CLIMATE_SWING_VERTICAL ||
+		switch_swing_mode == climate::CLIMATE_SWING_BOTH) {
 	switch(vertical_swing_direction_) {
 		case VerticalSwingDirection::UP_DOWN:
 			dataTX[32]	+= 0b00001000;
@@ -446,7 +451,10 @@ void tclacClimate::takeControl() {
 			ESP_LOGD("TCL", "Vertical swing: downer");
 			break;
 	}
-	// Set the horizontal flaps swing mode
+	}
+	// Set the horizontal flaps swing mode — only while horizontal swing is active.
+	if (switch_swing_mode == climate::CLIMATE_SWING_HORIZONTAL ||
+		switch_swing_mode == climate::CLIMATE_SWING_BOTH) {
 	switch(horizontal_swing_direction_) {
 		case HorizontalSwingDirection::LEFT_RIGHT:
 			dataTX[33]	+= 0b00001000;
@@ -465,7 +473,10 @@ void tclacClimate::takeControl() {
 			ESP_LOGD("TCL", "Horizontal swing: righter");
 			break;
 	}
-	// Set the vertical flap fixation position
+	}
+	// Set the vertical flap fixation position — only when vertical swing is inactive.
+	if (switch_swing_mode == climate::CLIMATE_SWING_OFF ||
+		switch_swing_mode == climate::CLIMATE_SWING_HORIZONTAL) {
 	switch(vertical_direction_) {
 		case AirflowVerticalDirection::LAST:
 			dataTX[32]	+= 0b00000000;
@@ -492,7 +503,10 @@ void tclacClimate::takeControl() {
 			ESP_LOGD("TCL", "Vertical fix: down");
 			break;
 	}
-	// Set the horizontal flaps fixation position
+	}
+	// Set the horizontal flaps fixation position — only when horizontal swing is inactive.
+	if (switch_swing_mode == climate::CLIMATE_SWING_OFF ||
+		switch_swing_mode == climate::CLIMATE_SWING_VERTICAL) {
 	switch(horizontal_direction_) {
 		case AirflowHorizontalDirection::LAST:
 			dataTX[33]	+= 0b00000000;
@@ -518,6 +532,7 @@ void tclacClimate::takeControl() {
 			dataTX[33]	+= 0b00000101;
 			ESP_LOGD("TCL", "Horizontal fix: right");
 			break;
+	}
 	}
 
 	// Temperature setting
