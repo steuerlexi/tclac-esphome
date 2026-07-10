@@ -193,7 +193,7 @@ void tclacClimate::readData() {
 	} else {
 		// If the air conditioner is off, all modes are shown as off
 		mode = climate::CLIMATE_MODE_OFF;
-		//fan_mode = climate::CLIMATE_FAN_OFF;
+		fan_mode = climate::CLIMATE_FAN_AUTO;
 		swing_mode = climate::CLIMATE_SWING_OFF;
 		preset = ClimatePreset::CLIMATE_PRESET_NONE;
 	}
@@ -217,14 +217,14 @@ void tclacClimate::control(const ClimateCall &call) {
 	if (call.get_preset().has_value()){
 		switch_preset = call.get_preset().value();
 	} else {
-		switch_preset = preset.value();
+		switch_preset = preset.value_or(ClimatePreset::CLIMATE_PRESET_NONE);
 	}
 
 	// Request data from the fan mode switch
 	if (call.get_fan_mode().has_value()){
 		switch_fan_mode = call.get_fan_mode().value();
 	} else {
-		switch_fan_mode = fan_mode.value();
+		switch_fan_mode = fan_mode.value_or(climate::CLIMATE_FAN_AUTO);
 	}
 
 	// Request data from the swing mode switch
@@ -262,8 +262,8 @@ void tclacClimate::takeControl() {
 	if (is_call_control != true){
 		ESP_LOGD("TCL", "Get MODE from AC for force config");
 		switch_climate_mode = mode;
-		switch_preset = preset.value();
-		switch_fan_mode = fan_mode.value();
+		switch_preset = preset.value_or(ClimatePreset::CLIMATE_PRESET_NONE);
+		switch_fan_mode = fan_mode.value_or(climate::CLIMATE_FAN_AUTO);
 		switch_swing_mode = swing_mode;
 		target_temperature_set = 31-(int)target_temperature;
 	}

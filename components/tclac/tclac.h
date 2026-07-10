@@ -117,6 +117,11 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 
 		tclacClimate() : PollingComponent(5 * 1000) {
 			checksum = 0;
+			mode = climate::CLIMATE_MODE_OFF;
+			fan_mode = climate::CLIMATE_FAN_AUTO;
+			swing_mode = climate::CLIMATE_SWING_OFF;
+			preset = ClimatePreset::CLIMATE_PRESET_NONE;
+			target_temperature = 16.0f;
 		}
 
 		void readData();
