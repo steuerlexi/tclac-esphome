@@ -21,6 +21,7 @@ from esphome.components.climate import (
     ClimateMode,
     ClimatePreset,
     ClimateSwingMode,
+    ClimateFanMode,
     CONF_CURRENT_TEMPERATURE,
 )
 
@@ -47,26 +48,26 @@ tclac_ns = cg.esphome_ns.namespace("tclac")
 tclacClimate = tclac_ns.class_("tclacClimate", uart.UARTDevice, climate.Climate, cg.PollingComponent)
 
 SUPPORTED_FAN_MODES_OPTIONS = {
-    "AUTO": ClimateMode.CLIMATE_FAN_AUTO,  # Always available
-    "QUIET": ClimateMode.CLIMATE_FAN_QUIET,
-    "LOW": ClimateMode.CLIMATE_FAN_LOW,
-    "MIDDLE": ClimateMode.CLIMATE_FAN_MIDDLE,
-    "MEDIUM": ClimateMode.CLIMATE_FAN_MEDIUM,
-    "HIGH": ClimateMode.CLIMATE_FAN_HIGH,
-    "FOCUS": ClimateMode.CLIMATE_FAN_FOCUS,
-    "DIFFUSE": ClimateMode.CLIMATE_FAN_DIFFUSE,
+    "AUTO": ClimateFanMode.CLIMATE_FAN_AUTO,
+    "QUIET": ClimateFanMode.CLIMATE_FAN_QUIET,
+    "LOW": ClimateFanMode.CLIMATE_FAN_LOW,
+    "MIDDLE": ClimateFanMode.CLIMATE_FAN_MIDDLE,
+    "MEDIUM": ClimateFanMode.CLIMATE_FAN_MEDIUM,
+    "HIGH": ClimateFanMode.CLIMATE_FAN_HIGH,
+    "FOCUS": ClimateFanMode.CLIMATE_FAN_FOCUS,
+    "DIFFUSE": ClimateFanMode.CLIMATE_FAN_DIFFUSE,
 }
 
 SUPPORTED_SWING_MODES_OPTIONS = {
-    "OFF": ClimateSwingMode.CLIMATE_SWING_OFF,  # Always available
+    "OFF": ClimateSwingMode.CLIMATE_SWING_OFF,
     "VERTICAL": ClimateSwingMode.CLIMATE_SWING_VERTICAL,
     "HORIZONTAL": ClimateSwingMode.CLIMATE_SWING_HORIZONTAL,
     "BOTH": ClimateSwingMode.CLIMATE_SWING_BOTH,
 }
 
 SUPPORTED_CLIMATE_MODES_OPTIONS = {
-    "OFF": ClimateMode.CLIMATE_MODE_OFF,  # Always available
-    "AUTO": ClimateMode.CLIMATE_MODE_AUTO,  # Always available
+    "OFF": ClimateMode.CLIMATE_MODE_OFF,
+    "AUTO": ClimateMode.CLIMATE_MODE_AUTO,
     "COOL": ClimateMode.CLIMATE_MODE_COOL,
     "HEAT": ClimateMode.CLIMATE_MODE_HEAT,
     "DRY": ClimateMode.CLIMATE_MODE_DRY,
@@ -74,7 +75,7 @@ SUPPORTED_CLIMATE_MODES_OPTIONS = {
 }
 
 SUPPORTED_CLIMATE_PRESETS_OPTIONS = {
-    "NONE": ClimatePreset.CLIMATE_PRESET_NONE, # Always available
+    "NONE": ClimatePreset.CLIMATE_PRESET_NONE,
     "ECO": ClimatePreset.CLIMATE_PRESET_ECO,
     "SLEEP": ClimatePreset.CLIMATE_PRESET_SLEEP,
     "COMFORT": ClimatePreset.CLIMATE_PRESET_COMFORT,
@@ -82,7 +83,7 @@ SUPPORTED_CLIMATE_PRESETS_OPTIONS = {
 
 VerticalSwingDirection = tclac_ns.enum("VerticalSwingDirection", True)
 VERTICAL_SWING_DIRECTION_OPTIONS = {
-    "UP_DOWN": VerticalSwingDirection.UPDOWN,
+    "UP_DOWN": VerticalSwingDirection.UP_DOWN,
     "UPSIDE": VerticalSwingDirection.UPSIDE,
     "DOWNSIDE": VerticalSwingDirection.DOWNSIDE,
 }
