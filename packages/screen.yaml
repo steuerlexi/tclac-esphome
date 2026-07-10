@@ -40,17 +40,17 @@ display:
         id(oled_disp).strftime(0, 0, id(font2), "%H:%M", time);
         id(oled_disp).line(0, 11, 127, 11);
 
-        if (id(${device_name}climate).mode == CLIMATE_MODE_OFF){
+        if (id(${climate_id}).mode == CLIMATE_MODE_OFF){
           id(oled_disp).print(0, 14, id(font1), "OFF");
-        } else if (id(${device_name}climate).mode == CLIMATE_MODE_AUTO){
+        } else if (id(${climate_id}).mode == CLIMATE_MODE_AUTO){
           id(oled_disp).print(0, 14, id(font1), "AUTO");
-        } else if (id(${device_name}climate).mode == CLIMATE_MODE_COOL){
+        } else if (id(${climate_id}).mode == CLIMATE_MODE_COOL){
           id(oled_disp).print(0, 14, id(font1), "COOL");
-        } else if (id(${device_name}climate).mode == CLIMATE_MODE_HEAT){
+        } else if (id(${climate_id}).mode == CLIMATE_MODE_HEAT){
           id(oled_disp).print(0, 14, id(font1), "HEAT");
-        } else if (id(${device_name}climate).mode == CLIMATE_MODE_DRY){
+        } else if (id(${climate_id}).mode == CLIMATE_MODE_DRY){
           id(oled_disp).print(0, 14, id(font1), "DRY");
-        } else if (id(${device_name}climate).mode == CLIMATE_MODE_FAN_ONLY){
+        } else if (id(${climate_id}).mode == CLIMATE_MODE_FAN_ONLY){
           id(oled_disp).print(0, 14, id(font1), "FAN");
         }
 
