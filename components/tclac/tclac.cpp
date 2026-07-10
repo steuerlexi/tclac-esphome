@@ -622,19 +622,15 @@ void tclacClimate::dataShow(bool flow, bool shine) {
 // Get beeper state
 void tclacClimate::set_beeper_state(bool state) {
 	this->beeper_status_ = state;
-	if (force_mode_status_){
-		if (allow_take_control){
-			tclacClimate::takeControl();
-		}
+	if (allow_take_control){
+		tclacClimate::takeControl();
 	}
 }
 // Get air conditioner display state
 void tclacClimate::set_display_state(bool state) {
 	this->display_status_ = state;
-	if (force_mode_status_){
-		if (allow_take_control){
-			tclacClimate::takeControl();
-		}
+	if (allow_take_control){
+		tclacClimate::takeControl();
 	}
 }
 // Get force mode state
