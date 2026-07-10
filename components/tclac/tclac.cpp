@@ -206,6 +206,10 @@ void tclacClimate::readData() {
 		swing_mode = climate::CLIMATE_SWING_OFF;
 		preset = ClimatePreset::CLIMATE_PRESET_NONE;
 	}
+	// Diagnostic: AC-reported flap bytes (byte 10 swing status, byte 32 swing
+	// status echo, bytes 51/52 = vertical/horizontal flap position per protocol RE).
+	ESP_LOGD("TCL", "RX flap bytes: byte10=0x%02X byte32=0x%02X byte51=0x%02X byte52=0x%02X",
+		dataRX[10], dataRX[32], dataRX[51], dataRX[52]);
 	// Publish the data
 	this->publish_state();
 	allow_take_control = true;
@@ -363,10 +367,16 @@ void tclacClimate::takeControl() {
 			break;
 	}
 
-	// Set the swing mode
+	// Set the swing mode.
+	// Vertical flap is controlled by byte 10 bits [5:3] (mask 0b00111000), a 3-bit
+	// field: 111 = swing on; 000 = swing off / keep last position (the AC then
+	// parks wherever the flap last was, often at the bottom); 001..101 = fixed
+	// positions top→bottom (same encoding the byte-32 fixation comment documented,
+	// but byte 32 is NOT the mechanism on these units — confirmed inert by testing).
+	// So when vertical swing is OFF we write the requested fixed position here.
 	switch(switch_swing_mode) {
 		case climate::CLIMATE_SWING_OFF:
-			dataTX[10]	+= 0b00000000;
+			dataTX[10]	+= (static_cast<uint8_t>(vertical_direction_) << 3);
 			dataTX[11]	+= 0b00000000;
 			break;
 		case climate::CLIMATE_SWING_VERTICAL:
@@ -374,7 +384,7 @@ void tclacClimate::takeControl() {
 			dataTX[11]	+= 0b00000000;
 			break;
 		case climate::CLIMATE_SWING_HORIZONTAL:
-			dataTX[10]	+= 0b00000000;
+			dataTX[10]	+= (static_cast<uint8_t>(vertical_direction_) << 3);
 			dataTX[11]	+= 0b00001000;
 			break;
 		case climate::CLIMATE_SWING_BOTH:
@@ -577,6 +587,12 @@ void tclacClimate::takeControl() {
 	dataTX[35] = 0x00;	//??
 	dataTX[36] = 0x00;	//??
 	dataTX[37] = tclacClimate::getChecksum(dataTX, sizeof(dataTX));
+
+	ESP_LOGI("TCL", "TX flap bytes: byte10=0x%02X byte32=0x%02X byte33=0x%02X | swing=%u vdir=%u hdir=%u",
+		dataTX[10], dataTX[32], dataTX[33],
+		switch_swing_mode,
+		static_cast<uint8_t>(vertical_direction_),
+		static_cast<uint8_t>(horizontal_direction_));
 
 	tclacClimate::sendData(dataTX, sizeof(dataTX));
 	allow_take_control = false;
