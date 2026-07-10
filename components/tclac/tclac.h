@@ -13,6 +13,8 @@
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/climate/climate.h"
 
+#include <string>
+
 // FreeRTOS Header for ESP-IDF compatibility
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -89,13 +91,13 @@ enum class AirflowHorizontalDirection : uint8_t {
 class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, public PollingComponent {
 
 	private:
-		byte checksum;
+		uint8_t checksum;
 		// dataTX with control consists of 38 bytes
-		byte dataTX[38];
+		uint8_t dataTX[38];
 		// dataRX is still 61 bytes
-		byte dataRX[61];
+		uint8_t dataRX[61];
 		// State poll command
-		byte poll[8] = {0xBB,0x00,0x01,0x04,0x02,0x01,0x00,0xBD};
+		uint8_t poll[8] = {0xBB,0x00,0x01,0x04,0x02,0x01,0x00,0xBD};
 		// Initialization and initial filling of switch state variables
 		bool beeper_status_;
 		bool display_status_;
@@ -128,31 +130,31 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		void set_force_mode_state(bool state);
 		void set_rx_led_pin(GPIOPin *rx_led_pin);
 		void set_tx_led_pin(GPIOPin *tx_led_pin);
-		void sendData(byte * message, byte size);
+		void sendData(uint8_t * message, uint8_t size);
 		void set_module_display_state(bool state);
-		static String getHex(byte *message, byte size);
+		static std::string getHex(uint8_t *message, uint8_t size);
 		void control(const ClimateCall &call) override;
-		static byte getChecksum(const byte * message, size_t size);
+		static uint8_t getChecksum(const uint8_t * message, size_t size);
 		void set_vertical_airflow(AirflowVerticalDirection direction);
 		void set_horizontal_airflow(AirflowHorizontalDirection direction);
 		void set_vertical_swing_direction(VerticalSwingDirection direction);
 		void set_horizontal_swing_direction(HorizontalSwingDirection direction);
-		void set_supported_presets(const std::set<climate::ClimatePreset> &presets);
-		void set_supported_modes(const std::set<esphome::climate::ClimateMode> &modes);
-		void set_supported_fan_modes(const std::set<esphome::climate::ClimateFanMode> &modes);
-		void set_supported_swing_modes(const std::set<esphome::climate::ClimateSwingMode> &modes);
+		void set_supported_presets(const climate::ClimatePresetMask &presets);
+		void set_supported_modes(const climate::ClimateModeMask &modes);
+		void set_supported_fan_modes(const climate::ClimateFanModeMask &modes);
+		void set_supported_swing_modes(const climate::ClimateSwingModeMask &modes);
 
 	protected:
 		GPIOPin *rx_led_pin_;
 		GPIOPin *tx_led_pin_;
 		ClimateTraits traits() override;
-		std::set<ClimateMode> supported_modes_{};
-		std::set<ClimatePreset> supported_presets_{};
+		climate::ClimateModeMask supported_modes_{};
+		climate::ClimatePresetMask supported_presets_{};
 		AirflowVerticalDirection vertical_direction_;
-		std::set<ClimateFanMode> supported_fan_modes_{};
+		climate::ClimateFanModeMask supported_fan_modes_{};
 		AirflowHorizontalDirection horizontal_direction_;
 		VerticalSwingDirection vertical_swing_direction_;
-		std::set<ClimateSwingMode> supported_swing_modes_{};
+		climate::ClimateSwingModeMask supported_swing_modes_{};
 		HorizontalSwingDirection horizontal_swing_direction_;
 };
 }

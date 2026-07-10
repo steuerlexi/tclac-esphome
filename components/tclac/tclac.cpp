@@ -15,9 +15,8 @@ namespace tclac{
 ClimateTraits tclacClimate::traits() {
 	auto traits = climate::ClimateTraits();
 
-	traits.set_supports_action(false);
-	traits.set_supports_current_temperature(true);
-	traits.set_supports_two_point_target_temperature(false);
+	uint32_t features = climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE;
+	traits.set_feature_flags(features);
 
 	traits.set_supported_modes(this->supported_modes_);
 	traits.set_supported_presets(this->supported_presets_);
@@ -75,7 +74,7 @@ void tclacClimate::loop()  {
 		// From the first 5 bytes we need the 5th - it contains the message length
 		esphome::uart::UARTDevice::read_array(dataRX+5, dataRX[4]+1);
 
-		byte check = getChecksum(dataRX, sizeof(dataRX));
+		uint8_t check = getChecksum(dataRX, sizeof(dataRX));
 
 		//raw = getHex(dataRX, sizeof(dataRX));
 
@@ -561,7 +560,7 @@ void tclacClimate::takeControl() {
 }
 
 // Send data to the air conditioner
-void tclacClimate::sendData(byte * message, byte size) {
+void tclacClimate::sendData(uint8_t * message, uint8_t size) {
 	tclacClimate::dataShow(1,1);
 	//Serial.write(message, size);
 	this->esphome::uart::UARTDevice::write_array(message, size);
@@ -571,19 +570,20 @@ void tclacClimate::sendData(byte * message, byte size) {
 }
 
 // Convert byte to readable format
-String tclacClimate::getHex(byte *message, byte size) {
-	String raw;
+std::string tclacClimate::getHex(uint8_t *message, uint8_t size) {
+	std::string raw;
+	char buf[8];
 	for (int i = 0; i < size; i++) {
-		raw += "\n" + String(message[i]);
+		snprintf(buf, sizeof(buf), "\n%02X", message[i]);
+		raw += buf;
 	}
-	raw.toUpperCase();
 	return raw;
 }
 
 // Calculate checksum
-byte tclacClimate::getChecksum(const byte * message, size_t size) {
-	byte position = size - 1;
-	byte crc = 0;
+uint8_t tclacClimate::getChecksum(const uint8_t * message, size_t size) {
+	uint8_t position = size - 1;
+	uint8_t crc = 0;
 	for (int i = 0; i < position; i++)
 		crc ^= message[i];
 	return crc;
@@ -685,7 +685,7 @@ void tclacClimate::set_vertical_swing_direction(VerticalSwingDirection direction
 	}
 }
 // Get available AC modes
-void tclacClimate::set_supported_modes(const std::set<climate::ClimateMode> &modes) {
+void tclacClimate::set_supported_modes(const climate::ClimateModeMask &modes) {
 	this->supported_modes_ = modes;
 }
 // Get horizontal flaps swing mode
@@ -698,15 +698,15 @@ void tclacClimate::set_horizontal_swing_direction(HorizontalSwingDirection direc
 	}
 }
 // Get available fan speeds
-void tclacClimate::set_supported_fan_modes(const std::set<climate::ClimateFanMode> &modes){
+void tclacClimate::set_supported_fan_modes(const climate::ClimateFanModeMask &modes){
 	this->supported_fan_modes_ = modes;
 }
 // Get available swing modes
-void tclacClimate::set_supported_swing_modes(const std::set<climate::ClimateSwingMode> &modes) {
+void tclacClimate::set_supported_swing_modes(const climate::ClimateSwingModeMask &modes) {
 	this->supported_swing_modes_ = modes;
 }
 // Get available presets
-void tclacClimate::set_supported_presets(const std::set<climate::ClimatePreset> &presets) {
+void tclacClimate::set_supported_presets(const climate::ClimatePresetMask &presets) {
   this->supported_presets_ = presets;
 }
 

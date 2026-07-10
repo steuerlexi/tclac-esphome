@@ -33,7 +33,7 @@ substitutions:
 # All entered lines must be at exactly this indentation level - otherwise errors will occur!
 packages:
   remote_package:
-    url: https://github.com/sorz2122/tclac.git
+    url: https://github.com/steuerlexi/tclac-esphome.git
     ref: master
     files:
     # v - lines must be aligned exactly here, otherwise there will be problems!

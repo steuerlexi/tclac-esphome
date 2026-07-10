@@ -55,3 +55,16 @@ Makefile
 # Temporary files
 *.tmp
 *.bak
+
+# ESPHome local build / secrets
+.esphome/
+secrets.yaml
+
+# Local test configs
+test_*.yaml
+
+# Virtual environment
+venv/
+
+# Claude session files
+.claude/
