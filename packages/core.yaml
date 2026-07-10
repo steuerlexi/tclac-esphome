@@ -2,6 +2,17 @@
 # # # # #                           DO NOT EDIT!!                                       # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+# Defaults for the substitutions used below. Override them in your main YAML.
+substitutions:
+  device_name: tclac
+  humanly_name: TCL Air Conditioner
+  api_key: "CHANGE_ME"
+  ota_pass: "CHANGE_ME"
+  recovery_pass: "CHANGE_ME"
+  uart_rx: GPIO3
+  uart_tx: GPIO1
+  climate_id: tclac_climate
+
 # Climate component - loaded directly from the fork repo
 external_components:
   - source:
@@ -19,74 +30,74 @@ esphome:
     priority: -100
     then:
       lambda: !lambda |-
-        id(${device_name}climate).set_beeper_state(false);
-        id(${device_name}climate).set_force_mode_state(false);
+        id(${climate_id}).set_beeper_state(false);
+        id(${climate_id}).set_force_mode_state(false);
 
         if (id(display_mode).state){
-          id(${device_name}climate).set_display_state(true);
+          id(${climate_id}).set_display_state(true);
         } else {
-          id(${device_name}climate).set_display_state(false);
+          id(${climate_id}).set_display_state(false);
         }
         if (id(ledflash_mode).state){
-          id(${device_name}climate).set_module_display_state(true);
+          id(${climate_id}).set_module_display_state(true);
         } else {
-          id(${device_name}climate).set_module_display_state(false);
+          id(${climate_id}).set_module_display_state(false);
         }
 
         if (id(vswing).active_index() == 0){
-          id(${device_name}climate).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UP_DOWN);
+          id(${climate_id}).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UP_DOWN);
         } else if (id(vswing).active_index() == 1){
-          id(${device_name}climate).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UPSIDE);
+          id(${climate_id}).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UPSIDE);
         } else if (id(vswing).active_index() == 2){
-          id(${device_name}climate).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::DOWNSIDE);
+          id(${climate_id}).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::DOWNSIDE);
         }
 
         if (id(hswing).active_index() == 0){
-          id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFT_RIGHT);
+          id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFT_RIGHT);
         } else if (id(hswing).active_index() == 1){
-          id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFTSIDE);
+          id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFTSIDE);
         } else if (id(hswing).active_index() == 2){
-          id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::CENTER);
+          id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::CENTER);
         } else if (id(hswing).active_index() == 3){
-          id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::RIGHTSIDE);
+          id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::RIGHTSIDE);
         }
 
         if (id(vfixing).active_index() == 0){
-          id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::LAST);
+          id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::LAST);
         } else if (id(vfixing).active_index() == 1){
-          id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_UP);
+          id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_UP);
         } else if (id(vfixing).active_index() == 2){
-          id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::UP);
+          id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::UP);
         } else if (id(vfixing).active_index() == 3){
-          id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::CENTER);
+          id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::CENTER);
         } else if (id(vfixing).active_index() == 4){
-          id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::DOWN);
+          id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::DOWN);
         } else if (id(vfixing).active_index() == 5){
-          id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_DOWN);
+          id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_DOWN);
         }
 
         if (id(hfixing).active_index() == 0){
-          id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LAST);
+          id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LAST);
         } else if (id(hfixing).active_index() == 1){
-          id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_LEFT);
+          id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_LEFT);
         } else if (id(hfixing).active_index() == 2){
-          id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LEFT);
+          id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LEFT);
         } else if (id(hfixing).active_index() == 3){
-          id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::CENTER);
+          id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::CENTER);
         } else if (id(hfixing).active_index() == 4){
-          id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::RIGHT);
+          id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::RIGHT);
         } else if (id(hfixing).active_index() == 5){
-          id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_RIGHT);
+          id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_RIGHT);
         }
         if (id(beep_mode).state){
-          id(${device_name}climate).set_beeper_state(true);
+          id(${climate_id}).set_beeper_state(true);
         } else {
-          id(${device_name}climate).set_beeper_state(false);
+          id(${climate_id}).set_beeper_state(false);
         }
         if (id(force_mode).state){
-          id(${device_name}climate).set_force_mode_state(true);
+          id(${climate_id}).set_force_mode_state(true);
         } else {
-          id(${device_name}climate).set_force_mode_state(false);
+          id(${climate_id}).set_force_mode_state(false);
         }
 
 uart:
@@ -129,11 +140,11 @@ switch:
     on_turn_on:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_beeper_state(true);
+          id(${climate_id}).set_beeper_state(true);
     on_turn_off:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_beeper_state(false);
+          id(${climate_id}).set_beeper_state(false);
 
   # Temperature setpoint display on indoor unit, enabled by default
   - name: Display
@@ -146,11 +157,11 @@ switch:
     on_turn_on:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_display_state(true);
+          id(${climate_id}).set_display_state(true);
     on_turn_off:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_display_state(false);
+          id(${climate_id}).set_display_state(false);
 
   # LED indication for data exchange with air conditioner, disabled by default
   - name: Display on module
@@ -163,11 +174,11 @@ switch:
     on_turn_on:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_module_display_state(true);
+          id(${climate_id}).set_module_display_state(true);
     on_turn_off:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_module_display_state(false);
+          id(${climate_id}).set_module_display_state(false);
 
   - name: Force config
     platform: template
@@ -179,11 +190,11 @@ switch:
     on_turn_on:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_force_mode_state(true);
+          id(${climate_id}).set_force_mode_state(true);
     on_turn_off:
       then:
         lambda: !lambda |-
-          id(${device_name}climate).set_force_mode_state(false);
+          id(${climate_id}).set_force_mode_state(false);
 
 # - Dropdown lists
 select:
@@ -202,11 +213,11 @@ select:
       then:
         lambda: !lambda |-
           if (id(vswing).active_index() == 0){
-            id(${device_name}climate).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UP_DOWN);
+            id(${climate_id}).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UP_DOWN);
           } else if (id(vswing).active_index() == 1){
-            id(${device_name}climate).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UPSIDE);
+            id(${climate_id}).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::UPSIDE);
           } else if (id(vswing).active_index() == 2){
-            id(${device_name}climate).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::DOWNSIDE);
+            id(${climate_id}).set_vertical_swing_direction(esphome::tclac::VerticalSwingDirection::DOWNSIDE);
           }
 
   # Horizontal swing setting
@@ -225,13 +236,13 @@ select:
       then:
         lambda: !lambda |-
           if (id(hswing).active_index() == 0){
-            id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFT_RIGHT);
+            id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFT_RIGHT);
           } else if (id(hswing).active_index() == 1){
-            id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFTSIDE);
+            id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::LEFTSIDE);
           } else if (id(hswing).active_index() == 2){
-            id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::CENTER);
+            id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::CENTER);
           } else if (id(hswing).active_index() == 3){
-            id(${device_name}climate).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::RIGHTSIDE);
+            id(${climate_id}).set_horizontal_swing_direction(esphome::tclac::HorizontalSwingDirection::RIGHTSIDE);
           }
 
   # Vertical flap fixation setting
@@ -252,17 +263,17 @@ select:
       then:
         lambda: !lambda |-
           if (id(vfixing).active_index() == 0){
-            id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::LAST);
+            id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::LAST);
           } else if (id(vfixing).active_index() == 1){
-            id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_UP);
+            id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_UP);
           } else if (id(vfixing).active_index() == 2){
-            id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::UP);
+            id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::UP);
           } else if (id(vfixing).active_index() == 3){
-            id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::CENTER);
+            id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::CENTER);
           } else if (id(vfixing).active_index() == 4){
-            id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::DOWN);
+            id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::DOWN);
           } else if (id(vfixing).active_index() == 5){
-            id(${device_name}climate).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_DOWN);
+            id(${climate_id}).set_vertical_airflow(esphome::tclac::AirflowVerticalDirection::MAX_DOWN);
           }
 
   # Horizontal flap fixation setting
@@ -283,20 +294,20 @@ select:
       then:
         lambda: !lambda |-
           if (id(hfixing).active_index() == 0){
-            id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LAST);
+            id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LAST);
           } else if (id(hfixing).active_index() == 1){
-            id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_LEFT);
+            id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_LEFT);
           } else if (id(hfixing).active_index() == 2){
-            id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LEFT);
+            id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::LEFT);
           } else if (id(hfixing).active_index() == 3){
-            id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::CENTER);
+            id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::CENTER);
           } else if (id(hfixing).active_index() == 4){
-            id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::RIGHT);
+            id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::RIGHT);
           } else if (id(hfixing).active_index() == 5){
-            id(${device_name}climate).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_RIGHT);
+            id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_RIGHT);
           }
 
 climate:
   - platform: tclac
     name: "${device_name} Climate"
-    id: ${device_name}climate
+    id: ${climate_id}
