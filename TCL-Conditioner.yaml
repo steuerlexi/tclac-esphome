@@ -17,6 +17,14 @@ substitutions:
   ota_pass: 90cf525a594c8bb2cbf917bc2c2fa058
 # API key for connecting to Home Assistant - generate new key here: https://esphome.io/components/api.html
   api_key: lmUoWsWs1oqSfJqLFsA6PisHSx4Y1G+iu7V3PDIqpXk=
+# Thread / OpenThread network settings (only used when packages/openthread.yaml is included)
+  thread_network_name: "TCL-Thread"
+  thread_channel: "15"
+  thread_pan_id: "0x1234"
+  thread_ext_pan_id: !secret thread_ext_pan_id
+  thread_network_key: !secret thread_network_key
+  thread_pskc: !secret thread_pskc
+  thread_mesh_local_prefix: !secret thread_mesh_local_prefix
 # GPIO pins of the module connected to UART:
   uart_rx: GPIO3
   uart_tx: GPIO1
@@ -28,7 +36,10 @@ substitutions:
 # Included files - automatically downloaded and updated from the internet.
 # Uncomment the desired options.
 # Description of options:
-# - packages/leds.yaml - LEDs for indicating transmit/receive; define pins via receive_led / transmit_led
+# - packages/core.yaml       - The heart of everything (mandatory)
+# - packages/wifi.yaml       - WiFi network connection (default; cannot be used with openthread.yaml)
+# - packages/leds.yaml       - LEDs for indicating transmit/receive; define pins via receive_led / transmit_led
+# - packages/openthread.yaml - Enables Thread (Matter-over-Thread) using the modern openthread component
 #
 # All entered lines must be at exactly this indentation level - otherwise errors will occur!
 packages:
@@ -38,7 +49,9 @@ packages:
     files:
     # v - lines must be aligned exactly here, otherwise there will be problems!
       - packages/core.yaml # The heart of everything
+      - packages/wifi.yaml # WiFi connection
       # - packages/leds.yaml
+      # - packages/openthread.yaml
     refresh: 30s
 
 # Selected module to be flashed with this firmware.
@@ -51,13 +64,19 @@ esp32:
     type: esp-idf
     version: recommended
 
-# Thread configuration (optional - enable if needed)
-#thread:
-#  enable: true
-#  network_name: "TCL-Thread"
-#  network_key: !secret thread_network_key
-#  pan_id: 0x1234
-#  channel: 15
+# Thread / OpenThread configuration (optional - enable if needed)
+# This requires the packages/openthread.yaml file to be included above and
+# ESP-IDF framework. Provide the actual Thread credentials in secrets.yaml.
+#openthread:
+#  device_type: FTD
+#  channel: ${thread_channel}
+#  network_name: ${thread_network_name}
+#  network_key: ${thread_network_key}
+#  pan_id: ${thread_pan_id}
+#  ext_pan_id: ${thread_ext_pan_id}
+#  pskc: ${thread_pskc}
+#  mesh_local_prefix: ${thread_mesh_local_prefix}
+#  force_dataset: true
 
 # For ESP32-C6 (better Thread support):
 #esp32:

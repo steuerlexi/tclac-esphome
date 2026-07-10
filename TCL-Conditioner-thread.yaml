@@ -1,0 +1,54 @@
+substitutions:
+# Unique name for this configuration - use only Latin letters and numbers,
+# no spaces or special characters, e.g. "tclac".
+  device_name: tclac
+# Human-readable name for the air conditioner, displayed in the interface:
+  humanly_name: TCL Air Conditioner Thread
+# Thread / OpenThread network credentials - must be provided in secrets.yaml or edited here:
+  thread_network_name: "TCL-Thread"
+  thread_channel: "15"
+  thread_pan_id: "0x1234"
+  thread_ext_pan_id: !secret thread_ext_pan_id
+  thread_network_key: !secret thread_network_key
+  thread_pskc: !secret thread_pskc
+  thread_mesh_local_prefix: !secret thread_mesh_local_prefix
+# Password for recovery mode - the hotspot will be named: "{device_name} Fallback Hotspot"
+  recovery_pass: mKSzmBdt7DAj
+# Password for OTA updates - generated once and used permanently:
+  ota_pass: 90cf525a594c8bb2cbf917bc2c2fa058
+# API key for connecting to Home Assistant - generate new key here: https://esphome.io/components/api.html
+  api_key: lmUoWsWs1oqSfJqLFsA6PisHSx4Y1G+iu7V3PDIqpXk=
+# GPIO pins of the module connected to UART:
+  uart_rx: GPIO3
+  uart_tx: GPIO1
+# GPIO pins for status LEDs (receive/transmit). Only work if "packages/leds.yaml" is enabled.
+# If you don't want to use LEDs, you can enter any values here.
+  receive_led: GPIO6
+  transmit_led: GPIO4
+
+# Included files - automatically downloaded and updated from the internet.
+# For Thread this device uses ONLY OpenThread (no WiFi). It must be on ESP32-C6 / ESP32-H2
+# or another ESP-IDF board with 802.15.4 radio support.
+packages:
+  remote_package:
+    url: https://github.com/steuerlexi/tclac-esphome.git
+    ref: master
+    files:
+      - packages/core.yaml       # The heart of everything
+      - packages/openthread.yaml # Thread / OpenThread network (replaces WiFi!)
+      # - packages/leds.yaml
+    refresh: 30s
+
+# ESP32-C6 is recommended for Thread (802.15.4 radio).
+esp32:
+  board: esp32-c6-devkitc-1
+  variant: esp32c6
+  framework:
+    type: esp-idf
+    version: recommended
+
+# Status LED - optionally enable if free pins are available
+#status_led:
+#  pin:
+#    number: GPIO5
+#    inverted: false

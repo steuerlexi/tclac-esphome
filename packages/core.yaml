@@ -105,11 +105,6 @@ ota:
 - platform: esphome
   password: "${ota_pass}"
 
-wifi:
-  id: "${device_name}_wifi"
-  ssid: ${wifi_ssid}
-  password: ${wifi_password}
-
 
 
 # # # # # # # # # # # # # # # # # # # # # # #

@@ -1,0 +1,22 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # #                           DO NOT EDIT!!                                       # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# OpenThread / Thread network configuration for ESPHome 2026.6+
+# Include this package in your main YAML to enable Thread (Matter-over-Thread).
+# The actual secrets (network_key, ext_pan_id, pskc, mesh_local_prefix) must be
+# provided via substitutions or the ESPHome secrets.yaml.
+
+network:
+  enable_ipv6: true
+
+openthread:
+  device_type: FTD
+  channel: ${thread_channel}
+  network_name: ${thread_network_name}
+  network_key: ${thread_network_key}
+  pan_id: ${thread_pan_id}
+  ext_pan_id: ${thread_ext_pan_id}
+  pskc: ${thread_pskc}
+  mesh_local_prefix: ${thread_mesh_local_prefix}
+  force_dataset: true

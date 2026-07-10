@@ -1,0 +1,9 @@
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# # # # #                           DO NOT EDIT!!                                       # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+# WiFi network configuration - use this OR packages/openthread.yaml, not both.
+wifi:
+  id: "${device_name}_wifi"
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
