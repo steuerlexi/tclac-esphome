@@ -72,6 +72,15 @@ void tclacClimate::loop()  {
 		//ESP_LOGD("TCL", "first 5 byte : %s ", raw.c_str());
 
 		// From the first 5 bytes we need the 5th - it contains the message length
+		// Guard against malformed/noise frames whose length byte would write
+		// past the end of dataRX[61] (need 5 + (len+1) <= 61, i.e. len <= 55).
+		if (dataRX[4] > sizeof(dataRX) - 6) {
+			ESP_LOGD("TCL", "Invalid length %u, dropping frame", dataRX[4]);
+			while (esphome::uart::UARTDevice::available())
+				(void) esphome::uart::UARTDevice::read();
+			tclacClimate::dataShow(0, 0);
+			return;
+		}
 		esphome::uart::UARTDevice::read_array(dataRX+5, dataRX[4]+1);
 
 		uint8_t check = getChecksum(dataRX, sizeof(dataRX));
@@ -544,6 +553,7 @@ void tclacClimate::takeControl() {
 	dataTX[26] = 0x00;	//??
 	dataTX[27] = 0x00;	//??
 	dataTX[28] = 0x00;	//??
+	dataTX[29] = 0x00;	//??
 	dataTX[30] = 0x00;	//??
 	dataTX[31] = 0x00;	//??
 	//dataTX[32] = 0x00;	//0,0,0,vertical swing mode(2),vertical fixation mode(3)
@@ -551,7 +561,6 @@ void tclacClimate::takeControl() {
 	dataTX[34] = 0x00;	//??
 	dataTX[35] = 0x00;	//??
 	dataTX[36] = 0x00;	//??
-	dataTX[37] = 0xFF;	//Checksum
 	dataTX[37] = tclacClimate::getChecksum(dataTX, sizeof(dataTX));
 
 	tclacClimate::sendData(dataTX, sizeof(dataTX));
@@ -567,17 +576,6 @@ void tclacClimate::sendData(uint8_t * message, uint8_t size) {
 	//auto raw = getHex(message, size);
 	ESP_LOGD("TCL", "Message to TCL sended...");
 	tclacClimate::dataShow(1,0);
-}
-
-// Convert byte to readable format
-std::string tclacClimate::getHex(uint8_t *message, uint8_t size) {
-	std::string raw;
-	char buf[8];
-	for (int i = 0; i < size; i++) {
-		snprintf(buf, sizeof(buf), "\n%02X", message[i]);
-		raw += buf;
-	}
-	return raw;
 }
 
 // Calculate checksum

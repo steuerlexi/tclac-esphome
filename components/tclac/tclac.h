@@ -91,7 +91,6 @@ enum class AirflowHorizontalDirection : uint8_t {
 class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, public PollingComponent {
 
 	private:
-		uint8_t checksum;
 		// dataTX with control consists of 38 bytes
 		uint8_t dataTX[38];
 		// dataRX is still 61 bytes
@@ -111,17 +110,20 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		uint8_t switch_climate_mode = 0;
 		bool allow_take_control = false;
 
-		esphome::climate::ClimateTraits traits_;
-
 	public:
 
 		tclacClimate() : PollingComponent(5 * 1000) {
-			checksum = 0;
 			mode = climate::CLIMATE_MODE_OFF;
 			fan_mode = climate::CLIMATE_FAN_AUTO;
 			swing_mode = climate::CLIMATE_SWING_OFF;
 			preset = ClimatePreset::CLIMATE_PRESET_NONE;
 			target_temperature = 16.0f;
+			// Initialise flap direction members so the first control frame
+			// sends sane defaults even before any set_*_airflow action runs.
+			vertical_direction_ = AirflowVerticalDirection::CENTER;
+			horizontal_direction_ = AirflowHorizontalDirection::CENTER;
+			vertical_swing_direction_ = VerticalSwingDirection::UP_DOWN;
+			horizontal_swing_direction_ = HorizontalSwingDirection::LEFT_RIGHT;
 		}
 
 		void readData();
@@ -137,7 +139,6 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		void set_tx_led_pin(GPIOPin *tx_led_pin);
 		void sendData(uint8_t * message, uint8_t size);
 		void set_module_display_state(bool state);
-		static std::string getHex(uint8_t *message, uint8_t size);
 		void control(const ClimateCall &call) override;
 		static uint8_t getChecksum(const uint8_t * message, size_t size);
 		void set_vertical_airflow(AirflowVerticalDirection direction);

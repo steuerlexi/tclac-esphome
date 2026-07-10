@@ -135,7 +135,7 @@ def validate_visual(config):
         if CONF_TEMPERATURE_STEP in visual_config:
             temp_step = config[CONF_VISUAL][CONF_TEMPERATURE_STEP][CONF_TARGET_TEMPERATURE]
             if ((int)(temp_step * 2)) / 2 != temp_step:
-                raise cv.Invalid(f"Specified temperature step {temp_step} is invalid, must be a multiple of 1")
+                raise cv.Invalid(f"Specified temperature step {temp_step} is invalid, must be a multiple of 0.5")
         else:
             config[CONF_VISUAL][CONF_TEMPERATURE_STEP] = {CONF_TARGET_TEMPERATURE: TCLAC_TARGET_TEMPERATURE_STEP,CONF_CURRENT_TEMPERATURE: TCLAC_CURRENT_TEMPERATURE_STEP,}
     else:
@@ -289,7 +289,7 @@ async def tclac_set_vertical_swing_direction_to_code(config, action_id, template
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_arg, paren)
     template_ = await cg.templatable(config[CONF_VERTICAL_SWING_MODE], args, VerticalSwingDirection)
-    cg.add(var.set_swing_direction(template_))
+    cg.add(var.set_direction(template_))
     return var
 
 
@@ -309,7 +309,7 @@ async def tclac_set_horizontal_swing_direction_to_code(config, action_id, templa
     paren = await cg.get_variable(config[CONF_ID])
     var = cg.new_Pvariable(action_id, template_arg, paren)
     template_ = await cg.templatable(config[CONF_HORIZONTAL_SWING_MODE], args, HorizontalSwingDirection)
-    cg.add(var.set_swing_direction(template_))
+    cg.add(var.set_direction(template_))
     return var
 
 
