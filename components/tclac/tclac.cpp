@@ -67,18 +67,18 @@ void tclacClimate::loop()  {
 		vTaskDelay(pdMS_TO_TICKS(5));
 		dataRX[4] = esphome::uart::UARTDevice::read();
 
-		auto raw = getHex(dataRX, 5);
+		//auto raw = getHex(dataRX, 5);
 
-		ESP_LOGD("TCL", "first 5 byte : %s ", raw.c_str());
+		//ESP_LOGD("TCL", "first 5 byte : %s ", raw.c_str());
 
 		// From the first 5 bytes we need the 5th - it contains the message length
 		esphome::uart::UARTDevice::read_array(dataRX+5, dataRX[4]+1);
 
 		uint8_t check = getChecksum(dataRX, sizeof(dataRX));
 
-		raw = getHex(dataRX, sizeof(dataRX));
+		//raw = getHex(dataRX, sizeof(dataRX));
 
-		ESP_LOGD("TCL", "RX full : %s ", raw.c_str());
+		//ESP_LOGD("TCL", "RX full : %s ", raw.c_str());
 
 		// Check the checksum
 		if (check != dataRX[60]) {
@@ -97,8 +97,8 @@ void tclacClimate::loop()  {
 void tclacClimate::update() {
 	tclacClimate::dataShow(1,1);
 	this->esphome::uart::UARTDevice::write_array(poll, sizeof(poll));
-	auto raw = tclacClimate::getHex(poll, sizeof(poll));
-	ESP_LOGD("TCL", "check status sended: %s", raw.c_str());
+	//auto raw = tclacClimate::getHex(poll, sizeof(poll));
+	//ESP_LOGD("TCL", "check status sended: %s", raw.c_str());
 	tclacClimate::dataShow(1,0);
 }
 
@@ -107,7 +107,7 @@ void tclacClimate::readData() {
 	current_temperature = float((( ((dataRX[17] << 8) | dataRX[18]) * 1.0f ) / 374.0f - 32.0f) / 1.8f);
 	target_temperature = (dataRX[FAN_SPEED_POS] & SET_TEMP_MASK) + 16;
 
-	ESP_LOGD("TCL", "TEMP raw bytes: %02X %02X, calculated: %f", dataRX[17], dataRX[18], current_temperature);
+	//ESP_LOGD("TCL", "TEMP raw bytes: %02X %02X, calculated: %f", dataRX[17], dataRX[18], current_temperature);
 
 	if (dataRX[MODE_POS] & ( 1 << 4)) {
 		// If the air conditioner is on, parse the data for display
