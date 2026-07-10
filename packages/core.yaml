@@ -2,17 +2,18 @@
 # # # # #                           DO NOT EDIT!!                                       # # # # #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Climate component - local for ESP-IDF compatibility
+# Climate component - loaded directly from the fork repo
 external_components:
   - source:
-      type: local
-      path: components
+      type: git
+      url: https://github.com/steuerlexi/tclac-esphome.git
+      ref: master
     components: [ tclac ]
 
 # ESPHome configuration
 esphome:
   name: ${device_name}
-  min_version: 2023.3.0
+  min_version: 2026.6.0
   friendly_name: ${humanly_name}
   on_boot:
     priority: -100
