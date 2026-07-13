@@ -68,14 +68,23 @@ Turn a dumb IR/UART air conditioner into a fully controllable **Home Assistant**
 
 ### USB-A service plug → ESP32
 
+> ⚠️ The AC's "USB-A" service port is **not real USB** — it is repurposed as a UART
+> port with a **non-standard pinout**. The mechanical USB-A pins do *not* carry
+> their normal signals, so do **not** treat this as a USB connection. Wire it
+> exactly as below (the authoritative mapping from the
+> [`sorz2122/tclac`](https://github.com/sorz2122/tclac) project):
+
 | USB-A pin | Wire color | ESP32 pin |
 |-----------|-----------|-----------|
-| GND | Black | GND |
-| D+ | Green | **RX** |
-| D- | White | **TX** |
-| VBUS | Red | 5V / VIN |
+| GND  | Black | **5V / VIN** |
+| D+   | Green | **GND** |
+| D−   | Gray / White | **RX** |
+| VBUS | Red | **TX** |
 
-> Cross TX↔RX: the AC's **D+** goes to the ESP's **RX**, **D−** to **TX**.
+> 🔄 **Cross TX↔RX:** the AC's **D−** goes to the ESP's **RX**, and the AC's
+> **VBUS** goes to the ESP's **TX**. The GND and D+ pins are *swapped* relative
+> to a normal USB cable (mechanical GND carries 5V, mechanical D+ is ground),
+> so double-check with a multimeter before powering up.
 
 ### Default GPIO assignment (ESP32-C3 sample)
 
@@ -335,7 +344,7 @@ compile without you editing your config.
 [TCL] Invalid checksum
 ```
 
-- Check **TX↔RX crossover** (AC D+ → ESP RX, AC D− → ESP TX).
+- Check the **non-standard USB-A → ESP32 wiring** (AC **D− → ESP RX**, AC **VBUS → ESP TX**, AC **GND → 5V/VIN**, AC **D+ → GND**) — see [Wiring](#-wiring). This is *not* a normal USB pinout.
 - Verify UART settings: **9600 baud, 8 data bits, Even parity, 1 stop bit**.
 - Confirm your `uart_rx` / `uart_tx` pins match the board you actually wired.
 - Check cable continuity on the USB-A service plug.
