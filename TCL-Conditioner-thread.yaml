@@ -13,11 +13,11 @@ substitutions:
   thread_pskc: !secret thread_pskc
   thread_mesh_local_prefix: !secret thread_mesh_local_prefix
 # Password for recovery mode - the hotspot will be named: "{device_name} Fallback Hotspot"
-  recovery_pass: mKSzmBdt7DAj
+  recovery_pass: !secret recovery_pass
 # Password for OTA updates - generated once and used permanently:
-  ota_pass: 90cf525a594c8bb2cbf917bc2c2fa058
+  ota_pass: !secret ota_pass
 # API key for connecting to Home Assistant - generate new key here: https://esphome.io/components/api.html
-  api_key: lmUoWsWs1oqSfJqLFsA6PisHSx4Y1G+iu7V3PDIqpXk=
+  api_key: !secret api_key
 # GPIO pins of the module connected to UART:
   uart_rx: GPIO3
   uart_tx: GPIO1
