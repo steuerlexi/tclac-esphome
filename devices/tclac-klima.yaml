@@ -1,4 +1,4 @@
-# Slim device config for the TCL Klima (XIAO ESP32-C6).
+# Slim device config for the TCL Klima (XIAO ESP32-C6, Thread connectivity).
 #
 # Everything except the secrets comes from the git repo:
 #   - the tclac component and this file's package are pulled from
@@ -12,8 +12,7 @@
 # contains only !secret KEY references, so it is safe to commit.
 #
 # Required keys in your local secrets.yaml:
-#   wifi_ssid, wifi_password,
-#   tclac_klima__encryption_key, tclac_klima__ota_password
+#   proxon_thread_tlv, tclac_klima__encryption_key, tclac_klima__ota_password
 
 substitutions:
   device_name: tclac-klima
@@ -32,23 +31,13 @@ esp32:
   framework:
     type: esp-idf
 
-wifi:
-  ssid: !secret wifi_ssid
-  password: !secret wifi_password
-  fast_connect: true
-  manual_ip:
-    static_ip: 192.168.1.212
-    gateway: 192.168.1.1
-    subnet: 255.255.255.0
-    dns1: 192.168.1.2
-  reboot_timeout: 15min
-  on_connect:
-    - logger.log: "WLAN verbunden!"
-  on_disconnect:
-    - logger.log: "WLAN getrennt!"
+# Thread connectivity (no WiFi — this device uses IEEE 802.15.4 / Thread).
+network:
+  enable_ipv6: true
 
-web_server:
-  port: 80
+openthread:
+  tlv: !secret proxon_thread_tlv
+  device_type: FTD
 
 safe_mode:
   disabled: false
