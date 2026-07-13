@@ -4,9 +4,9 @@
 #   - the tclac component and this file's package are pulled from
 #     github.com/steuerlexi/tclac-esphome (see `packages:` below and the
 #     external_components inside core.yaml), and
-#   - the package (packages/core.yaml in the repo) provides the boilerplate:
+#   - the package (packages/core.yaml in the repo) provides everything else:
 #     external_components, on_boot, uart, api, ota, logger, all switches and
-#     selects.
+#     selects, and the climate platform block.
 #
 # Only the secret VALUES live locally in secrets.yaml (gitignored). This file
 # contains only !secret KEY references, so it is safe to commit.
@@ -44,49 +44,10 @@ safe_mode:
   reboot_timeout: 10min
   num_attempts: 5
 
-# Pulls packages/core.yaml from the repo over git. Provides external_components,
-# on_boot, uart, api, ota, logger, switches (Beep/Display/Display on module/Force
-# config) and selects (Vertical/Horizontal swing + fixing).
+# Pulls packages/core.yaml from the repo over git. Provides everything else:
+# external_components (the tclac component), on_boot, uart, api, ota, logger,
+# switches (Beep/Display/Display on module/Force config), selects
+# (Vertical/Horizontal swing + fixing) AND the climate platform block.
+# This device file holds ONLY identity + hardware + connectivity + secrets.
 packages:
   tclac_core: github://steuerlexi/tclac-esphome/packages/core.yaml@master
-
-# Device-specific climate platform (visual range + supported modes). Kept here
-# rather than in the package because it varies per AC model.
-climate:
-  - platform: tclac
-    name: ${humanly_name}
-    id: ${climate_id}
-    icon: mdi:air-conditioner
-    visual:
-      min_temperature: 16
-      max_temperature: 31
-      temperature_step: 1
-    supported_modes:
-      - 'OFF'
-      - AUTO
-      - COOL
-      - HEAT
-      - DRY
-      - FAN_ONLY
-    supported_fan_modes:
-      - AUTO
-      - QUIET
-      - LOW
-      - MIDDLE
-      - MEDIUM
-      - HIGH
-      - FOCUS
-      - DIFFUSE
-    supported_swing_modes:
-      - 'OFF'
-      - VERTICAL
-      - HORIZONTAL
-      - BOTH
-    supported_presets:
-      - NONE
-      - ECO
-      - SLEEP
-      - COMFORT
-    beeper: false
-    force_mode: false
-    show_display: true

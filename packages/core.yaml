@@ -307,8 +307,46 @@ select:
             id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_RIGHT);
           }
 
-# NOTE: the `climate:` platform block is intentionally NOT in this package.
-# It is device-specific (visual temperature range, supported modes / fan modes /
-# swing modes / presets, beeper / force_mode / show_display all vary per AC
-# model), so define it in your device YAML. Defining it here as well would
-# collide with the device YAML's climate block (duplicate id `tclac_climate`).
+# Climate platform — the TCL AC climate entity, built from the `tclac`
+# component pulled via external_components above. Uses substitutions
+# ${humanly_name} and ${climate_id} (defaults declared at the top of this file,
+# overridable per device). Device YAMLs must NOT also define a `climate:` block,
+# or it would collide with this one (duplicate id `${climate_id}`).
+climate:
+  - platform: tclac
+    name: ${humanly_name}
+    id: ${climate_id}
+    icon: mdi:air-conditioner
+    visual:
+      min_temperature: 16
+      max_temperature: 31
+      temperature_step: 1
+    supported_modes:
+      - 'OFF'
+      - AUTO
+      - COOL
+      - HEAT
+      - DRY
+      - FAN_ONLY
+    supported_fan_modes:
+      - AUTO
+      - QUIET
+      - LOW
+      - MIDDLE
+      - MEDIUM
+      - HIGH
+      - FOCUS
+      - DIFFUSE
+    supported_swing_modes:
+      - 'OFF'
+      - VERTICAL
+      - HORIZONTAL
+      - BOTH
+    supported_presets:
+      - NONE
+      - ECO
+      - SLEEP
+      - COMFORT
+    beeper: false
+    force_mode: false
+    show_display: true
