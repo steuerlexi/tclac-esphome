@@ -206,10 +206,23 @@ void tclacClimate::readData() {
 		swing_mode = climate::CLIMATE_SWING_OFF;
 		preset = ClimatePreset::CLIMATE_PRESET_NONE;
 	}
-	// Diagnostic: AC-reported flap bytes (byte 10 swing status, byte 32 swing
-	// status echo, bytes 51/52 = vertical/horizontal flap position per protocol RE).
-	ESP_LOGD("TCL", "RX flap bytes: byte10=0x%02X byte32=0x%02X byte51=0x%02X byte52=0x%02X",
-		dataRX[10], dataRX[32], dataRX[51], dataRX[52]);
+	// Diagnostic: log the AC-reported flap bytes ONLY when the vertical/horizontal
+	// position (RX byte 51/52) changes. This lets the user set each flap position
+	// with the original IR remote and read back the canonical byte-51 value for
+	// that position at INFO level — no need to raise the logger to DEBUG. Per the
+	// junkfix protocol, RX byte 51 is the vertical flap position reported by the
+	// AC, byte 52 the horizontal flap position. The previous TX-side hypotheses
+	// (byte 32 fixation, then byte 10 bits [5:3] = 011 = center) were both refuted
+	// by on-device testing, so the real encoding must be read from the AC itself.
+	{
+		static uint8_t last_vpos = 0xFF, last_hpos = 0xFF;
+		if (dataRX[51] != last_vpos || dataRX[52] != last_hpos) {
+			ESP_LOGI("TCL", "RX flap changed: byte10=0x%02X byte32=0x%02X byte51=0x%02X byte52=0x%02X",
+				dataRX[10], dataRX[32], dataRX[51], dataRX[52]);
+			last_vpos = dataRX[51];
+			last_hpos = dataRX[52];
+		}
+	}
 	// Publish the data
 	this->publish_state();
 	allow_take_control = true;
