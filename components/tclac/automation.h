@@ -6,7 +6,7 @@
 namespace esphome {
 namespace tclac {
 
-// Action template: change vertical flap fixation
+// Шаблон действия: изменение вертикальной фиксации заслонки
 template<typename... Ts> class VerticalAirflowAction : public Action<Ts...> {
  public:
   VerticalAirflowAction(tclacClimate *parent) : parent_(parent) {}
@@ -17,7 +17,7 @@ template<typename... Ts> class VerticalAirflowAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: change horizontal flaps fixation
+// Шаблон действия: изменение горизонтальной фиксации заслонок
 template<typename... Ts> class HorizontalAirflowAction : public Action<Ts...> {
  public:
   HorizontalAirflowAction(tclacClimate *parent) : parent_(parent) {}
@@ -28,7 +28,7 @@ template<typename... Ts> class HorizontalAirflowAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: change vertical flap swing mode
+// Шаблон действия: изменение режима вертикального качания заслонки
 template<typename... Ts> class VerticalSwingDirectionAction : public Action<Ts...> {
  public:
   VerticalSwingDirectionAction(tclacClimate *parent) : parent_(parent) {}
@@ -39,7 +39,7 @@ template<typename... Ts> class VerticalSwingDirectionAction : public Action<Ts..
   tclacClimate *parent_;
 };
 
-// Action template: change horizontal flaps swing mode
+// Шаблон действия: изменение режима горизонтального качания заслонок
 template<typename... Ts> class HorizontalSwingDirectionAction : public Action<Ts...> {
  public:
   HorizontalSwingDirectionAction(tclacClimate *parent) : parent_(parent) {}
@@ -50,7 +50,7 @@ template<typename... Ts> class HorizontalSwingDirectionAction : public Action<Ts
   tclacClimate *parent_;
 };
 
-// Action template: turn on display
+// Шаблон действия: включение дисплея
 template<typename... Ts> class DisplayOnAction : public Action<Ts...> {
  public:
   DisplayOnAction(tclacClimate *parent) : parent_(parent) {}
@@ -60,7 +60,7 @@ template<typename... Ts> class DisplayOnAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn off display
+// Шаблон действия: выключение дисплея
 template<typename... Ts> class DisplayOffAction : public Action<Ts...> {
  public:
   DisplayOffAction(tclacClimate *parent) : parent_(parent) {}
@@ -70,7 +70,7 @@ template<typename... Ts> class DisplayOffAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn on beeper
+// Шаблон действия: включение пищалки
 template<typename... Ts> class BeeperOnAction : public Action<Ts...> {
  public:
   BeeperOnAction(tclacClimate *parent) : parent_(parent) {}
@@ -80,7 +80,7 @@ template<typename... Ts> class BeeperOnAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn off beeper
+// Шаблон действия: выклюение пищалки
 template<typename... Ts> class BeeperOffAction : public Action<Ts...> {
  public:
   BeeperOffAction(tclacClimate *parent) : parent_(parent) {}
@@ -90,7 +90,7 @@ template<typename... Ts> class BeeperOffAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn on module indicator
+// Шаблон действия: включение индикатора модуля
 template<typename... Ts> class ModuleDisplayOnAction : public Action<Ts...> {
  public:
   ModuleDisplayOnAction(tclacClimate *parent) : parent_(parent) {}
@@ -100,7 +100,7 @@ template<typename... Ts> class ModuleDisplayOnAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn off module indicator
+// Шаблон действия: выключение индикатора модуля
 template<typename... Ts> class ModuleDisplayOffAction : public Action<Ts...> {
  public:
   ModuleDisplayOffAction(tclacClimate *parent) : parent_(parent) {}
@@ -110,7 +110,7 @@ template<typename... Ts> class ModuleDisplayOffAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn on force apply settings
+// Шаблон действия: включение принудительного применения настроек
 template<typename... Ts> class ForceOnAction : public Action<Ts...> {
  public:
   ForceOnAction(tclacClimate *parent) : parent_(parent) {}
@@ -120,7 +120,7 @@ template<typename... Ts> class ForceOnAction : public Action<Ts...> {
   tclacClimate *parent_;
 };
 
-// Action template: turn off force apply settings
+// Шаблон действия: выключение принудительного применения настроек
 template<typename... Ts> class ForceOffAction : public Action<Ts...> {
  public:
   ForceOffAction(tclacClimate *parent) : parent_(parent) {}

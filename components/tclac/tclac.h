@@ -2,7 +2,7 @@
 * Create by Miguel Ángel López on 20/07/19
 * and modify by xaxexa
 * Refactoring & component making:
-* Nightingale with soldering iron 15.03.2024
+* Соловей с паяльником 15.03.2024
 **/
 
 #ifndef TCL_ESP_TCL_H
@@ -13,9 +13,8 @@
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/climate/climate.h"
 
-#include <string>
-
-// FreeRTOS Header for ESP-IDF compatibility
+// FreeRTOS header for ESP-IDF compatibility (Arduino's delay()/byte are not
+// available under the esp-idf framework this component is built with).
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -36,15 +35,15 @@ namespace tclac {
 #define FAN_SPEED_POS	8
 #define FAN_QUIET_POS	33
 
-#define FAN_AUTO		0b10000000	// auto
-#define FAN_QUIET		0x80		// silent
-#define FAN_LOW			0b10010000	//  |
-#define FAN_MIDDLE		0b11000000	//  ||
-#define FAN_MEDIUM		0b10100000	//  |||
-#define FAN_HIGH		0b11010000	//  ||||
-#define FAN_FOCUS		0b10110000	//  |||||
-#define FAN_DIFFUSE		0b10000000	// POWER [7]
-#define FAN_SPEED_MASK	0b11110000	// FAN SPEED MASK
+#define FAN_AUTO		0b10000000	//auto
+#define FAN_QUIET		0x80		//silent
+#define FAN_LOW			0b10010000	//	|
+#define FAN_MIDDLE		0b11000000	//	||
+#define FAN_MEDIUM		0b10100000	//	|||
+#define FAN_HIGH		0b11010000	//	||||
+#define FAN_FOCUS		0b10110000	//	|||||
+#define FAN_DIFFUSE		0b10000000	//	POWER [7]
+#define FAN_SPEED_MASK	0b11110000	//FAN SPEED MASK
 
 #define SWING_POS			10
 #define SWING_OFF			0b00000000
@@ -91,13 +90,14 @@ enum class AirflowHorizontalDirection : uint8_t {
 class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, public PollingComponent {
 
 	private:
-		// dataTX with control consists of 38 bytes
+		uint8_t checksum;
+		// dataTX с управлением состоит из 38 байт
 		uint8_t dataTX[38];
-		// dataRX is still 61 bytes
+		// А dataRX по прежнему из 61 байта
 		uint8_t dataRX[61];
-		// State poll command
+		// Команда запроса состояния
 		uint8_t poll[8] = {0xBB,0x00,0x01,0x04,0x02,0x01,0x00,0xBD};
-		// Initialization and initial filling of switch state variables
+		// Инициализация и начальное наполнение переменных состоянй переключателей
 		bool beeper_status_;
 		bool display_status_;
 		bool force_mode_status_;
@@ -109,21 +109,13 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		int target_temperature_set = 0;
 		uint8_t switch_climate_mode = 0;
 		bool allow_take_control = false;
-
+		
+		esphome::climate::ClimateTraits traits_;
+		
 	public:
 
 		tclacClimate() : PollingComponent(5 * 1000) {
-			mode = climate::CLIMATE_MODE_OFF;
-			fan_mode = climate::CLIMATE_FAN_AUTO;
-			swing_mode = climate::CLIMATE_SWING_OFF;
-			preset = ClimatePreset::CLIMATE_PRESET_NONE;
-			target_temperature = 16.0f;
-			// Initialise flap direction members so the first control frame
-			// sends sane defaults even before any set_*_airflow action runs.
-			vertical_direction_ = AirflowVerticalDirection::CENTER;
-			horizontal_direction_ = AirflowHorizontalDirection::CENTER;
-			vertical_swing_direction_ = VerticalSwingDirection::UP_DOWN;
-			horizontal_swing_direction_ = HorizontalSwingDirection::LEFT_RIGHT;
+			checksum = 0;
 		}
 
 		void readData();
@@ -145,11 +137,11 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		void set_horizontal_airflow(AirflowHorizontalDirection direction);
 		void set_vertical_swing_direction(VerticalSwingDirection direction);
 		void set_horizontal_swing_direction(HorizontalSwingDirection direction);
-		void set_supported_presets(const climate::ClimatePresetMask &presets);
-		void set_supported_modes(const climate::ClimateModeMask &modes);
-		void set_supported_fan_modes(const climate::ClimateFanModeMask &modes);
-		void set_supported_swing_modes(const climate::ClimateSwingModeMask &modes);
-
+		void set_supported_presets(climate::ClimatePresetMask presets);
+		void set_supported_modes(climate::ClimateModeMask modes);
+		void set_supported_fan_modes(climate::ClimateFanModeMask modes);
+		void set_supported_swing_modes(climate::ClimateSwingModeMask modes);
+		
 	protected:
 		GPIOPin *rx_led_pin_;
 		GPIOPin *tx_led_pin_;
