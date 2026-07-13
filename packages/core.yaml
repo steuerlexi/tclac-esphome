@@ -307,7 +307,8 @@ select:
             id(${climate_id}).set_horizontal_airflow(esphome::tclac::AirflowHorizontalDirection::MAX_RIGHT);
           }
 
-climate:
-  - platform: tclac
-    name: "${device_name} Climate"
-    id: ${climate_id}
+# NOTE: the `climate:` platform block is intentionally NOT in this package.
+# It is device-specific (visual temperature range, supported modes / fan modes /
+# swing modes / presets, beeper / force_mode / show_display all vary per AC
+# model), so define it in your device YAML. Defining it here as well would
+# collide with the device YAML's climate block (duplicate id `tclac_climate`).
