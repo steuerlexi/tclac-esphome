@@ -382,27 +382,32 @@ void tclacClimate::takeControl() {
 
 	// Set the swing mode.
 	// Vertical flap is controlled by byte 10 bits [5:3] (mask 0b00111000), a 3-bit
-	// field: 111 = swing on; 000 = swing off / keep last position (the AC then
-	// parks wherever the flap last was, often at the bottom); 001..101 = fixed
-	// positions top→bottom (same encoding the byte-32 fixation comment documented,
-	// but byte 32 is NOT the mechanism on these units — confirmed inert by testing).
-	// So when vertical swing is OFF we write the requested fixed position here.
+	// field: 111 = swing on; 011 = fixed at CENTER; 000 = swing off / keep last
+	// position (the AC then parks wherever the flap last is — during/after a swing
+	// that is often at the bottom, which was the original "parks down" bug).
+	// Confirmed on the unit (2026-07-13): TX byte10 = 0b00011000 (011<<3 = CENTER)
+	// makes the AC report RX byte51 = 0x00 and physically park straight ahead.
+	// TX byte10 = 0b00000000 (000 = keep-last) lets the flap stay where it was.
+	// Per the user's "Immer Mitte" choice, whenever vertical swing is OFF —
+	// including when only horizontal swing is active — we ALWAYS write CENTER
+	// (0b00011000) here. The Vertical Airflow select (vertical_direction_) is
+	// intentionally NOT used for the park position.
 	switch(switch_swing_mode) {
 		case climate::CLIMATE_SWING_OFF:
-			dataTX[10]	+= (static_cast<uint8_t>(vertical_direction_) << 3);
+			dataTX[10]	+= 0b00011000;	// vertical parked at CENTER
 			dataTX[11]	+= 0b00000000;
 			break;
 		case climate::CLIMATE_SWING_VERTICAL:
-			dataTX[10]	+= 0b00111000;
+			dataTX[10]	+= 0b00111000;	// vertical swing on
 			dataTX[11]	+= 0b00000000;
 			break;
 		case climate::CLIMATE_SWING_HORIZONTAL:
-			dataTX[10]	+= (static_cast<uint8_t>(vertical_direction_) << 3);
-			dataTX[11]	+= 0b00001000;
+			dataTX[10]	+= 0b00011000;	// vertical parked at CENTER
+			dataTX[11]	+= 0b00001000;	// horizontal swing on
 			break;
 		case climate::CLIMATE_SWING_BOTH:
-			dataTX[10]	+= 0b00111000;
-			dataTX[11]	+= 0b00001000;
+			dataTX[10]	+= 0b00111000;	// vertical swing on
+			dataTX[11]	+= 0b00001000;	// horizontal swing on
 			break;
 	}
 
@@ -497,65 +502,25 @@ void tclacClimate::takeControl() {
 			break;
 	}
 	}
-	// Set the vertical flap fixation position — only when vertical swing is inactive.
+	// Vertical fixation field (byte 32 bits [2:0]). This field was found INERT on
+	// the unit (the actual mechanism is byte 10 bits [5:3], see the swing block
+	// above), but we write CENTER (0b011) for consistency whenever vertical swing
+	// is inactive. The Vertical Airflow select (vertical_direction_) is
+	// intentionally ignored — swing-off always parks at center ("Immer Mitte").
 	if (switch_swing_mode == climate::CLIMATE_SWING_OFF ||
 		switch_swing_mode == climate::CLIMATE_SWING_HORIZONTAL) {
-	switch(vertical_direction_) {
-		case AirflowVerticalDirection::LAST:
-			dataTX[32]	+= 0b00000000;
-			ESP_LOGD("TCL", "Vertical fix: last position");
-			break;
-		case AirflowVerticalDirection::MAX_UP:
-			dataTX[32]	+= 0b00000001;
-			ESP_LOGD("TCL", "Vertical fix: up");
-			break;
-		case AirflowVerticalDirection::UP:
-			dataTX[32]	+= 0b00000010;
-			ESP_LOGD("TCL", "Vertical fix: upper");
-			break;
-		case AirflowVerticalDirection::CENTER:
-			dataTX[32]	+= 0b00000011;
-			ESP_LOGD("TCL", "Vertical fix: center");
-			break;
-		case AirflowVerticalDirection::DOWN:
-			dataTX[32]	+= 0b00000100;
-			ESP_LOGD("TCL", "Vertical fix: downer");
-			break;
-		case AirflowVerticalDirection::MAX_DOWN:
-			dataTX[32]	+= 0b00000101;
-			ESP_LOGD("TCL", "Vertical fix: down");
-			break;
+		dataTX[32]	+= 0b00000011;	// center fixation (inert field, kept consistent)
+		ESP_LOGD("TCL", "Vertical fix: center (forced)");
 	}
-	}
-	// Set the horizontal flaps fixation position — only when horizontal swing is inactive.
+	// Horizontal fixation field (byte 33 bits [2:0]). Inert on the unit (the
+	// actual mechanism is byte 11 bit3 for swing on/off); write CENTER (0b011)
+	// for consistency whenever horizontal swing is inactive. The Horizontal
+	// Airflow select (horizontal_direction_) is intentionally ignored — swing-off
+	// always parks at center ("Immer Mitte").
 	if (switch_swing_mode == climate::CLIMATE_SWING_OFF ||
 		switch_swing_mode == climate::CLIMATE_SWING_VERTICAL) {
-	switch(horizontal_direction_) {
-		case AirflowHorizontalDirection::LAST:
-			dataTX[33]	+= 0b00000000;
-			ESP_LOGD("TCL", "Horizontal fix: last position");
-			break;
-		case AirflowHorizontalDirection::MAX_LEFT:
-			dataTX[33]	+= 0b00000001;
-			ESP_LOGD("TCL", "Horizontal fix: left");
-			break;
-		case AirflowHorizontalDirection::LEFT:
-			dataTX[33]	+= 0b00000010;
-			ESP_LOGD("TCL", "Horizontal fix: lefter");
-			break;
-		case AirflowHorizontalDirection::CENTER:
-			dataTX[33]	+= 0b00000011;
-			ESP_LOGD("TCL", "Horizontal fix: center");
-			break;
-		case AirflowHorizontalDirection::RIGHT:
-			dataTX[33]	+= 0b00000100;
-			ESP_LOGD("TCL", "Horizontal fix: righter");
-			break;
-		case AirflowHorizontalDirection::MAX_RIGHT:
-			dataTX[33]	+= 0b00000101;
-			ESP_LOGD("TCL", "Horizontal fix: right");
-			break;
-	}
+		dataTX[33]	+= 0b00000011;	// center fixation (inert field, kept consistent)
+		ESP_LOGD("TCL", "Horizontal fix: center (forced)");
 	}
 
 	// Temperature setting
