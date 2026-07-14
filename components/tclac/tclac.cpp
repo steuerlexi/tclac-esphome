@@ -203,6 +203,35 @@ void tclacClimate::readData() {
 	// Публикуем данные
 	this->publish_state();
 	allow_take_control = true;
+
+	// --- Verify & Retry: did the AC confirm our last command? ---
+	if (pending_command_) {
+		bool confirmed = (mode == pending_mode_);
+		if (mode != climate::CLIMATE_MODE_OFF) {
+			if (fan_mode.has_value() && pending_fan_ != fan_mode.value()) confirmed = false;
+			if (swing_mode != pending_swing_) confirmed = false;
+			float dt = target_temperature - pending_target_temperature_;
+			if (dt < 0) dt = -dt;
+			if (dt > 0.5f) confirmed = false;
+		}
+		if (confirmed) {
+			pending_command_ = false;
+			pending_retries_ = 0;
+			ESP_LOGI("TCL", "Command confirmed by AC");
+		} else if (esphome::millis() - pending_sent_ms_ >= TCL_VERIFY_TIMEOUT_MS) {
+			if (pending_retries_ < TCL_VERIFY_MAX_RETRIES) {
+				pending_retries_++;
+				ESP_LOGW("TCL", "Command not confirmed after %lu ms, re-sending (try %u/%u)",
+					(unsigned long)(esphome::millis() - pending_sent_ms_),
+					pending_retries_, TCL_VERIFY_MAX_RETRIES);
+				tclacClimate::retryPendingCommand();
+			} else {
+				ESP_LOGW("TCL", "Command not confirmed after %u retries, giving up", pending_retries_);
+				pending_command_ = false;
+				pending_retries_ = 0;
+			}
+		}
+	}
    }
 
 // Climate control
@@ -248,9 +277,29 @@ void tclacClimate::control(const ClimateCall &call) {
 	is_call_control = true;
 	takeControl();
 	allow_take_control = true;
+
+	// Arm command verification: snapshot what we just requested so readData()
+	// can confirm it against the AC's next status frame and re-send on timeout.
+	pending_command_ = true;
+	pending_sent_ms_ = esphome::millis();
+	pending_retries_ = 0;
+	pending_mode_ = (climate::ClimateMode) switch_climate_mode;
+	pending_fan_ = (climate::ClimateFanMode) switch_fan_mode;
+	pending_swing_ = (climate::ClimateSwingMode) switch_swing_mode;
+	pending_target_temperature_ = 31.0f - (float) target_temperature_set;
 }
 	
 	
+// Повторная отправка последней команды (Verify & Retry)
+void tclacClimate::retryPendingCommand() {
+	// switch_* ещё хранят запрошенные значения — заставляем takeControl()
+	// использовать их как есть, а не перезаписывать из состояния кондиционера.
+	is_call_control = true;
+	allow_take_control = true;
+	pending_sent_ms_ = esphome::millis();
+	tclacClimate::takeControl();
+}
+
 void tclacClimate::takeControl() {
 	
 	dataTX[7]  = 0b00000000;

@@ -52,6 +52,15 @@ namespace tclac {
 #define SWING_BOTH			0b01100000
 #define SWING_MODE_MASK		0b01100000
 
+// --- Verify & Retry (command confirmation) -------------------------------
+// Re-send a climate command if the AC's status frame hasn't confirmed it
+// within this many ms (≈2 poll cycles at the default 5 s poll). Tunable.
+#define TCL_VERIFY_TIMEOUT_MS  10000
+// Give up after this many unsuccessful re-sends (logs a warning; HA keeps
+// the AC's last reported state as ground truth — entity is NOT set
+// unavailable, so automations keep working).
+#define TCL_VERIFY_MAX_RETRIES 3
+
 using climate::ClimateCall;
 using climate::ClimateMode;
 using climate::ClimatePreset;
@@ -109,6 +118,17 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		int target_temperature_set = 0;
 		uint8_t switch_climate_mode = 0;
 		bool allow_take_control = false;
+
+		// Verify & Retry state — armed in control(), checked in readData().
+		// Confirms mode / target temp / fan / swing against the AC's status
+		// frame; re-sends via retryPendingCommand() on timeout.
+		bool pending_command_ = false;
+		uint32_t pending_sent_ms_ = 0;
+		uint8_t pending_retries_ = 0;
+		climate::ClimateMode pending_mode_ = climate::CLIMATE_MODE_OFF;
+		climate::ClimateFanMode pending_fan_ = climate::CLIMATE_FAN_AUTO;
+		climate::ClimateSwingMode pending_swing_ = climate::CLIMATE_SWING_OFF;
+		float pending_target_temperature_ = 24.0f;
 		
 		esphome::climate::ClimateTraits traits_;
 		
@@ -132,6 +152,7 @@ class tclacClimate : public climate::Climate, public esphome::uart::UARTDevice, 
 		void sendData(uint8_t * message, uint8_t size);
 		void set_module_display_state(bool state);
 		void control(const ClimateCall &call) override;
+		void retryPendingCommand();
 		static uint8_t getChecksum(const uint8_t * message, size_t size);
 		void set_vertical_airflow(AirflowVerticalDirection direction);
 		void set_horizontal_airflow(AirflowHorizontalDirection direction);
