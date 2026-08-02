@@ -249,14 +249,14 @@ void tclacClimate::control(const ClimateCall &call) {
 	if (call.get_preset().has_value()){
 		switch_preset = call.get_preset().value();
 	} else {
-		switch_preset = preset.value();
+		switch_preset = preset.has_value() ? preset.value() : climate::CLIMATE_PRESET_NONE;
 	}
 	
 	// Запрашиваем данные из переключателя режимов вентилятора
 	if (call.get_fan_mode().has_value()){
 		switch_fan_mode = call.get_fan_mode().value();
 	} else {
-		switch_fan_mode = fan_mode.value();
+		switch_fan_mode = fan_mode.has_value() ? fan_mode.value() : climate::CLIMATE_FAN_AUTO;
 	}
 	
 	// Запрашиваем данные из переключателя режимов качания заслонок
@@ -314,8 +314,8 @@ void tclacClimate::takeControl() {
 	if (is_call_control != true){
 		ESP_LOGD("TCL", "Get MODE from AC for force config");
 		switch_climate_mode = mode;
-		switch_preset = preset.value();
-		switch_fan_mode = fan_mode.value();
+		switch_preset = preset.has_value() ? preset.value() : climate::CLIMATE_PRESET_NONE;
+		switch_fan_mode = fan_mode.has_value() ? fan_mode.value() : climate::CLIMATE_FAN_AUTO;
 		switch_swing_mode = swing_mode;
 		target_temperature_set = 31-(int)target_temperature;
 	}
