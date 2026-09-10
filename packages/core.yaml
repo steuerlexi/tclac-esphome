@@ -14,11 +14,17 @@ substitutions:
   climate_id: tclac_climate
 
 # Climate component - loaded directly from the fork repo
+# refresh: always is TEMPORARY — the device previously compiled with a stale
+# cached copy of the component ("Skipping update" in the build log), so the
+# crash fix in commit bb8bd6b never made it into the firmware (the OTA boot
+# rolled back to the old partition). Reset to refresh: 1d once the fix is
+# confirmed deployed.
 external_components:
   - source:
       type: git
       url: https://github.com/steuerlexi/tclac-esphome.git
       ref: master
+      refresh: always
     components: [ tclac ]
 
 # ESPHome configuration
