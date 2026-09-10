@@ -249,14 +249,18 @@ void tclacClimate::control(const ClimateCall &call) {
 	if (call.get_preset().has_value()){
 		switch_preset = call.get_preset().value();
 	} else {
-		switch_preset = preset.value();
+		// preset — optional; до первого кадра состояния (и когда АС не сообщает пресет) он пуст,
+		// .value() на пустом optional приводит к assert. Используем значение по умолчанию.
+		switch_preset = preset.value_or(ClimatePreset::CLIMATE_PRESET_NONE);
 	}
-	
+
 	// Запрашиваем данные из переключателя режимов вентилятора
 	if (call.get_fan_mode().has_value()){
 		switch_fan_mode = call.get_fan_mode().value();
 	} else {
-		switch_fan_mode = fan_mode.value();
+		// fan_mode — optional и никогда не заполняется, пока кондиционер выключен;
+		// .value() на пустом optional приводит к assert. Используем значение по умолчанию.
+		switch_fan_mode = fan_mode.value_or(climate::CLIMATE_FAN_AUTO);
 	}
 	
 	// Запрашиваем данные из переключателя режимов качания заслонок
@@ -314,8 +318,10 @@ void tclacClimate::takeControl() {
 	if (is_call_control != true){
 		ESP_LOGD("TCL", "Get MODE from AC for force config");
 		switch_climate_mode = mode;
-		switch_preset = preset.value();
-		switch_fan_mode = fan_mode.value();
+		// preset/fan_mode — optional и могут быть пусты до первого кадра состояния;
+		// .value() на пустом optional приводит к assert. Используем значения по умолчанию.
+		switch_preset = preset.value_or(ClimatePreset::CLIMATE_PRESET_NONE);
+		switch_fan_mode = fan_mode.value_or(climate::CLIMATE_FAN_AUTO);
 		switch_swing_mode = swing_mode;
 		target_temperature_set = 31-(int)target_temperature;
 	}
