@@ -19,12 +19,15 @@ substitutions:
 # crash fix in commit bb8bd6b never made it into the firmware (the OTA boot
 # rolled back to the old partition). Reset to refresh: 1d once the fix is
 # confirmed deployed.
+# Position note: refresh must sit as a sibling of source: (list-item level) —
+# ESPHome 2026.9.1's schema rejects it inside source: with
+# "[refresh] is an invalid option for [source]. Did you mean [ref]?".
 external_components:
   - source:
       type: git
       url: https://github.com/steuerlexi/tclac-esphome.git
       ref: master
-      refresh: always
+    refresh: always
     components: [ tclac ]
 
 # ESPHome configuration
