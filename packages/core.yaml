@@ -12,13 +12,14 @@ substitutions:
   uart_rx: GPIO3
   uart_tx: GPIO1
   climate_id: tclac_climate
+  # Commit the tclac component is pulled from, so builds are reproducible
+  # against the package pin. Bump it in the same commit as the package pin
+  # when the component changes; devices may override to "master" to track it.
+  tclac_ref: "98fa38917741f3467c16b18f08ee078d92981013"
 
-# Climate component - loaded directly from the fork repo
-# refresh: always is TEMPORARY — the device previously compiled with a stale
-# cached copy of the component ("Skipping update" in the build log), so the
-# crash fix in commit bb8bd6b never made it into the firmware (the OTA boot
-# rolled back to the old partition). Reset to refresh: 1d once the fix is
-# confirmed deployed.
+# Climate component - loaded directly from the fork repo, pinned via
+# ${tclac_ref}. The refresh: always workaround for the stale-package cache is
+# retired — the bb8bd6b boot-crash fix was confirmed deployed on 2026-10-30.
 # Position note: refresh must sit as a sibling of source: (list-item level) —
 # ESPHome 2026.9.1's schema rejects it inside source: with
 # "[refresh] is an invalid option for [source]. Did you mean [ref]?".
@@ -26,8 +27,8 @@ external_components:
   - source:
       type: git
       url: https://github.com/steuerlexi/tclac-esphome.git
-      ref: master
-    refresh: always
+      ref: ${tclac_ref}
+    refresh: 1d
     components: [ tclac ]
 
 # ESPHome configuration
